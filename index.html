@@ -386,6 +386,11 @@
             </div>
 
             <div class="flex items-center gap-3">
+                <button id="leaderboardBtn" class="btn-action bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg shadow-amber-500/30 focus-ring">
+                    <i data-lucide="trophy" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline ml-2">Leaderboard</span>
+                </button>
+
                 <button id="themeToggle" class="btn-icon focus-ring" title="Ganti Tema">
                     <i id="themeIcon" data-lucide="sun" class="w-5 h-5 text-[--color-text-primary]"></i>
                 </button>
@@ -495,7 +500,11 @@
 
         <section id="grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" aria-label="Daftar Soal"></section>
 
-        <div class="mt-24 flex justify-center gap-4">
+        <div class="mt-24 flex justify-center gap-4 flex-wrap">
+            <button id="submitScoreBtn" class="btn-action bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white shadow-2xl shadow-amber-500/40 focus-ring">
+                <i data-lucide="trophy" class="w-4 h-4"></i>
+                <span class="ml-2">Submit Skor</span>
+            </button>
             <button id="resetBtn" class="btn-action bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700 text-white shadow-2xl shadow-red-500/40 focus-ring">
                 <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                 <span class="ml-2">Reset Semua Soal</span>
@@ -546,7 +555,7 @@
 
     <!-- Admin Overlay -->
     <div id="adminOverlay" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-xl p-6 no-print overlay-anim">
-        <div class="relative w-full max-w-4xl card-surface p-10 modal-anim">
+        <div class="relative w-full max-w-4xl card-surface p-10 modal-anim max-h-[90vh] overflow-y-auto">
             <button id="adminClose" class="absolute right-5 top-5 p-2 rounded-full btn-icon hover:bg-opacity-80 focus-ring">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
@@ -575,6 +584,94 @@
         </div>
     </div>
 
+    <!-- Leaderboard Overlay -->
+    <div id="leaderboardOverlay" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-xl p-6 no-print overlay-anim">
+        <div class="relative w-full max-w-4xl card-surface p-10 modal-anim max-h-[90vh] overflow-y-auto">
+            <button id="leaderboardClose" class="absolute right-5 top-5 p-2 rounded-full btn-icon hover:bg-opacity-80 focus-ring">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center gap-4 mb-8">
+                <div class="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg">
+                    <i data-lucide="trophy" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-black text-[--color-text-primary]">Leaderboard</h3>
+                    <p class="text-sm text-[--color-text-secondary] mt-1">Top skor dari semua peserta</p>
+                </div>
+            </div>
+
+            <div id="leaderboardList" class="space-y-3 mb-6"></div>
+
+            <div class="flex gap-3 justify-end">
+                <button id="clearLeaderboard" class="btn-action bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white shadow-lg shadow-red-500/30">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span class="ml-2">Hapus Semua</span>
+                </button>
+                <button id="leaderboardCloseBtn" class="btn-action bg-gray-600 hover:bg-gray-700 text-white">
+                    <span>Tutup</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Score Overlay -->
+    <div id="submitScoreOverlay" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-xl p-6 no-print overlay-anim">
+        <div class="relative w-full max-w-md card-surface p-10 modal-anim">
+            <button id="submitScoreClose" class="absolute right-5 top-5 p-2 rounded-full btn-icon hover:bg-opacity-80 focus-ring">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center gap-4 mb-8">
+                <div class="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg">
+                    <i data-lucide="trophy" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-black text-[--color-text-primary]">Submit Skor</h3>
+                    <p class="text-sm text-[--color-text-secondary] mt-1">Masukkan nama dan skor Anda</p>
+                </div>
+            </div>
+
+            <form id="submitScoreForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-[--color-text-primary] mb-2">Nama Lengkap</label>
+                    <input type="text" id="scoreNameInput" required
+                        class="w-full p-4 rounded-lg bg-[--card-bg] text-[--color-text-primary] border border-[--card-border] focus:outline-none focus:ring-2 focus:ring-[--color-accent-blue] transition-all"
+                        placeholder="Masukkan nama Anda">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-[--color-text-primary] mb-2">Skor</label>
+                    <input type="number" id="scoreValueInput" required min="0" max="100"
+                        class="w-full p-4 rounded-lg bg-[--card-bg] text-[--color-text-primary] border border-[--card-border] focus:outline-none focus:ring-2 focus:ring-[--color-accent-blue] transition-all"
+                        placeholder="0-100">
+                </div>
+
+                <div class="stats-card">
+                    <div class="text-sm text-[--color-text-secondary] mb-2">Statistik Saat Ini:</div>
+                    <div class="flex justify-between text-[--color-text-primary] font-bold">
+                        <span>Soal Dibuka:</span>
+                        <span id="currentStatsOpened">0/15</span>
+                    </div>
+                    <div class="flex justify-between text-[--color-text-primary] font-bold">
+                        <span>Persentase:</span>
+                        <span id="currentStatsPercentage">0%</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="submit" class="btn-action btn-action-primary flex-1">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        <span class="ml-2">Submit</span>
+                    </button>
+                    <button type="button" id="submitScoreCancel" class="btn-action bg-gray-600 hover:bg-gray-700 text-white">
+                        <span>Batal</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
 
@@ -599,6 +696,7 @@
         let QUESTIONS = [];
         let openedQuestions = new Set();
         let viewCount = 0;
+        let leaderboard = [];
         const grid = document.getElementById('grid');
         
         // Timer Variables
@@ -756,6 +854,12 @@
             document.getElementById('statsPercentage').textContent = percentage + '%';
             document.getElementById('statsProgress').style.width = percentage + '%';
             
+            // Update current stats in submit form if visible
+            const currentStatsOpened = document.getElementById('currentStatsOpened');
+            const currentStatsPercentage = document.getElementById('currentStatsPercentage');
+            if (currentStatsOpened) currentStatsOpened.textContent = `${opened}/${total}`;
+            if (currentStatsPercentage) currentStatsPercentage.textContent = percentage + '%';
+            
             // Save to localStorage
             localStorage.setItem('pretest_opened', JSON.stringify([...openedQuestions]));
             localStorage.setItem('pretest_viewcount', viewCount);
@@ -786,6 +890,162 @@
         }
 
         document.getElementById('resetStatsBtn').addEventListener('click', resetStats);
+
+        // Leaderboard Functions
+        function loadLeaderboard() {
+            const saved = localStorage.getItem('pretest_leaderboard');
+            if (saved) {
+                leaderboard = JSON.parse(saved);
+            }
+        }
+
+        function saveLeaderboard() {
+            localStorage.setItem('pretest_leaderboard', JSON.stringify(leaderboard));
+        }
+
+        function renderLeaderboard() {
+            const list = document.getElementById('leaderboardList');
+            list.innerHTML = '';
+
+            if (leaderboard.length === 0) {
+                list.innerHTML = '<div class="text-center text-[--color-text-secondary] py-8">Belum ada data skor. Submit skor pertama Anda!</div>';
+                lucide.createIcons();
+                return;
+            }
+
+            // Sort by score descending
+            const sorted = [...leaderboard].sort((a, b) => b.score - a.score);
+
+            sorted.forEach((entry, idx) => {
+                const rank = idx + 1;
+                const rankColors = {
+                    1: 'from-yellow-500 to-amber-600',
+                    2: 'from-gray-400 to-gray-500',
+                    3: 'from-orange-600 to-orange-700'
+                };
+                const rankColor = rankColors[rank] || 'from-blue-500 to-purple-600';
+
+                const item = el('div', 'card-surface p-4 flex items-center gap-4');
+                item.innerHTML = `
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br ${rankColor} flex items-center justify-center text-white font-black text-xl shadow-lg">
+                        ${rank}
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-lg font-bold text-[--color-text-primary]">${entry.name}</div>
+                        <div class="text-sm text-[--color-text-secondary]">${entry.date}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-black text-[--color-text-primary]">${entry.score}</div>
+                        <div class="text-xs text-[--color-text-secondary]">poin</div>
+                    </div>
+                    <button class="btn-icon delete-score" data-index="${leaderboard.findIndex(e => e === entry)}">
+                        <i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i>
+                    </button>
+                `;
+                list.appendChild(item);
+            });
+
+            // Add delete handlers
+            document.querySelectorAll('.delete-score').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    if (confirm('Hapus entri ini dari leaderboard?')) {
+                        leaderboard.splice(index, 1);
+                        saveLeaderboard();
+                        renderLeaderboard();
+                    }
+                });
+            });
+
+            lucide.createIcons();
+        }
+
+        function openLeaderboard() {
+            document.getElementById('leaderboardOverlay').classList.remove('hidden');
+            renderLeaderboard();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboardOverlay').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('leaderboardBtn').addEventListener('click', openLeaderboard);
+        document.getElementById('leaderboardClose').addEventListener('click', closeLeaderboard);
+        document.getElementById('leaderboardCloseBtn').addEventListener('click', closeLeaderboard);
+        
+        document.getElementById('clearLeaderboard').addEventListener('click', () => {
+            if (confirm('Hapus SEMUA data leaderboard? Tindakan ini tidak dapat dibatalkan!')) {
+                leaderboard = [];
+                saveLeaderboard();
+                renderLeaderboard();
+                alert('✅ Leaderboard telah dihapus.');
+            }
+        });
+
+        document.getElementById('leaderboardOverlay').addEventListener('click', (ev) => {
+            if (ev.target.id === 'leaderboardOverlay') closeLeaderboard();
+        });
+
+        // Submit Score Functions
+        function openSubmitScore() {
+            document.getElementById('submitScoreOverlay').classList.remove('hidden');
+            updateStats(); // Update current stats display
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => document.getElementById('scoreNameInput').focus(), 100);
+        }
+
+        function closeSubmitScore() {
+            document.getElementById('submitScoreOverlay').classList.add('hidden');
+            document.body.style.overflow = '';
+            document.getElementById('submitScoreForm').reset();
+        }
+
+        document.getElementById('submitScoreBtn').addEventListener('click', openSubmitScore);
+        document.getElementById('submitScoreClose').addEventListener('click', closeSubmitScore);
+        document.getElementById('submitScoreCancel').addEventListener('click', closeSubmitScore);
+
+        document.getElementById('submitScoreOverlay').addEventListener('click', (ev) => {
+            if (ev.target.id === 'submitScoreOverlay') closeSubmitScore();
+        });
+
+        document.getElementById('submitScoreForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('scoreNameInput').value.trim();
+            const score = parseInt(document.getElementById('scoreValueInput').value);
+
+            if (!name || isNaN(score) || score < 0 || score > 100) {
+                alert('⚠️ Mohon isi nama dan skor dengan benar (0-100).');
+                return;
+            }
+
+            const now = new Date();
+            const dateStr = now.toLocaleString('id-ID', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const entry = {
+                name: name,
+                score: score,
+                date: dateStr,
+                timestamp: now.getTime()
+            };
+
+            leaderboard.push(entry);
+            saveLeaderboard();
+            
+            closeSubmitScore();
+            alert(`✅ Skor berhasil disimpan!\n\nNama: ${name}\nSkor: ${score}`);
+            
+            // Auto open leaderboard
+            setTimeout(() => openLeaderboard(), 300);
+        });
         
         function el(tag, cls = '', html = '') {
             const e = document.createElement(tag);
@@ -1064,6 +1324,7 @@
             QUESTIONS = saved ? JSON.parse(saved) : DEFAULT_QUESTIONS.slice();
             renderCards();
             loadStats();
+            loadLeaderboard();
             updateTimerDisplay();
         }
         
