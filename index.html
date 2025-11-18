@@ -330,6 +330,21 @@
             </div>
 
             <div class="flex items-center gap-3">
+                <!-- Timer Display -->
+                <div class="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-[--icon-bg] border border-[--card-border]">
+                    <i data-lucide="clock" class="w-4 h-4 text-[--color-accent-blue]"></i>
+                    <span id="timerDisplay" class="font-mono font-bold text-lg text-[--color-text-primary]">15:00</span>
+                </div>
+                
+                <!-- Timer Controls -->
+                <button id="playPauseBtn" class="btn-icon focus-ring" title="Play/Pause Timer">
+                    <i id="playPauseIcon" data-lucide="play" class="w-5 h-5 text-[--color-text-primary]"></i>
+                </button>
+                
+                <button id="resetTimerBtn" class="btn-icon focus-ring" title="Reset Timer">
+                    <i data-lucide="rotate-ccw" class="w-5 h-5 text-[--color-text-primary]"></i>
+                </button>
+                
                 <button id="themeToggle" class="btn-icon focus-ring" title="Ganti Tema">
                     <i id="themeIcon" data-lucide="sun" class="w-5 h-5 text-[--color-text-primary]"></i>
                 </button>
@@ -352,10 +367,8 @@
             <h1 class="text-6xl md:text-8xl font-black leading-tight tracking-tighter hero-title mb-6">
                 Pretest Pengkodean
             </h1>
-            <p class="mt-6 text-m md:text-l text-[--color-text-secondary] max-w-3xl mx-auto leading-relaxed">
-                “Yuk main tebak-tebakan encoder dan decoder!
-                Kalau kamu bingung, itu wajar… soalnya otak manusia memang bukan IC 74LS138.
-                Tapi coba aja dulu, siapa tahu hari ini sinyal logika di kepalamu lagi HIGH semua.”
+            <p class="mt-6 text-xl md:text-2xl text-[--color-text-secondary] max-w-3xl mx-auto leading-relaxed">
+                Uji kemampuan dasar Anda dalam pemrograman dan logika. Klik pada setiap nomor soal untuk menampilkan pertanyaan esai.
             </p>
         </section>
 
@@ -441,23 +454,22 @@
         lucide.createIcons();
 
         const DEFAULT_QUESTIONS = [
-            "Jelaskan apa yang dimaksud dengan BCD (Binary Coded Decimal)!",
-            "Jelaskan perbedaan antara sandi berbobot dan sandi tidak berbobot!",
-            "Jelaskan bagaimana hubungan antara counter dan decoder dalam proses menampilkan angka pada seven segment!",
-            "Jelaskan fungsi seven segment serta cara kerja segmen a–g dalam menampilkan angka!",
-            "Jelaskan fungsi IC TTL 7447 dalam rangkaian seven segment common anoda!",
-            "Jelaskan fungsi IC TTL 7448 dan bagaimana perbedaannya dengan IC 7447!",
-            "Jelaskan fungsi jalur LT, RBI, dan RBO pada IC decoder seven segment!",
-            "Jelaskan cara kerja encoder menggunakan IC 74HC147 berdasarkan percobaan dalam modul!",
-            "Jelaskan mengapa output encoder 74HC147 diarahkan ke IC 7404 sebelum digunakan!",
-            "Jelaskan bagaimana cara kerja rangkaian decoder seven segment common anoda menggunakan IC 7447!",
-            "Jelaskan perbedaan rangkaian decoder seven segment common anoda dan common katoda!",
-            "Jelaskan bagaimana tabel segment (a–g) menentukan angka yang ditampilkan pada seven segment!",
-            "Jelaskan langkah-langkah TinkerCad pada percobaan encoder seperti yang dijelaskan dalam modul!",
-            "Jelaskan alasan pemasangan resistor 220 Ohm pada rangkaian seven segment!",
-            "Bisakah rangkaian encoder dan decoder diintegrasikan dalam satu sistem? Jika memungkinkan, jelaskan bagaimana cara penggabungannya. Jika tidak memungkinkan, jelaskan alasannya!"
+            "Jelaskan apa yang dimaksud dengan algoritma dalam konteks pemrograman dan berikan contoh penerapannya pada masalah sehari-hari!",
+            "Apa perbedaan mendasar antara variabel lokal (local) dan variabel global (global)?",
+            "Mengapa struktur kontrol (if/else, switch) penting? Jelaskan dengan contoh penggunaan 'if-else if-else' untuk evaluasi nilai.",
+            "Jelaskan perbedaan antara compiler dan interpreter, serta sebutkan satu bahasa pemrograman yang menggunakan masing-masing.",
+            "Apa yang dimaksud dengan pseudocode dan mengapa ini merupakan langkah penting sebelum menulis kode sesungguhnya?",
+            "Jelaskan konsep Looping (perulangan) dalam pemrograman! Berikan contoh sintaks 'for' dan 'while' untuk mencetak angka 1 sampai 5.",
+            "Apa itu tipe data? Sebutkan minimal empat tipe data primitif yang umum ditemukan di berbagai bahasa pemrograman.",
+            "Jelaskan apa yang dimaksud dengan fungsi (function) dalam pemrograman dan manfaat utamanya.",
+            "Mengapa dokumentasi dan komentar diperlukan di dalam kode, meskipun kode tersebut sudah sangat rapi?",
+            "Jelaskan alur kerja dari proses debugging. Apa alat (tools) yang biasa Anda gunakan?",
+            "Apa perbedaan struktural dan penggunaan antara Array dan Object dalam JavaScript/JSON?",
+            "Berikan contoh implementasi dari rekursi sederhana (misalnya, menghitung faktorial) dan jelaskan kapan rekursi harus dihindari.",
+            "Jelaskan konsep Input/Output (I/O) dalam program dan berikan contoh I/O yang terjadi saat Anda menggunakan aplikasi perpesanan.",
+            "Apa itu 'Clean Code'? Berikan tiga prinsip dasar yang harus diikuti untuk membuat kode yang bersih.",
+            "Jelaskan mengapa Anda memilih karir di bidang pengkodean (coding) dan apa tujuan jangka panjang Anda?"
         ];
-
 
         let QUESTIONS = [];
         const grid = document.getElementById('grid');
@@ -619,6 +631,82 @@
             const currentTheme = getTheme();
             setTheme(currentTheme === 'dark' ? 'light' : 'dark');
         });
+
+        // Timer Functionality
+        let timerSeconds = 15 * 60; // 15 minutes in seconds
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        const timerDisplay = document.getElementById('timerDisplay');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const playPauseIcon = document.getElementById('playPauseIcon');
+        const resetTimerBtn = document.getElementById('resetTimerBtn');
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            // Change color when time is running out
+            if (timerSeconds <= 60) {
+                timerDisplay.classList.add('text-red-500');
+                timerDisplay.classList.remove('text-[--color-text-primary]');
+            } else if (timerSeconds <= 300) {
+                timerDisplay.classList.add('text-yellow-500');
+                timerDisplay.classList.remove('text-[--color-text-primary]', 'text-red-500');
+            } else {
+                timerDisplay.classList.remove('text-red-500', 'text-yellow-500');
+                timerDisplay.classList.add('text-[--color-text-primary]');
+            }
+        }
+
+        function startTimer() {
+            if (isTimerRunning) return;
+            isTimerRunning = true;
+            playPauseIcon.setAttribute('data-lucide', 'pause');
+            lucide.createIcons();
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                
+                if (timerSeconds <= 0) {
+                    pauseTimer();
+                    timerSeconds = 0;
+                    updateTimerDisplay();
+                    // Play sound notification (optional)
+                    alert('⏰ Waktu Habis! Timer telah selesai.');
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            playPauseIcon.setAttribute('data-lucide', 'play');
+            lucide.createIcons();
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timerSeconds = 15 * 60;
+            updateTimerDisplay();
+        }
+
+        playPauseBtn.addEventListener('click', () => {
+            if (isTimerRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        });
+
+        resetTimerBtn.addEventListener('click', () => {
+            resetTimer();
+        });
+
+        // Initialize timer display
+        updateTimerDisplay();
 
         // Reset Questions
         document.getElementById('resetBtn').addEventListener('click', () => {
