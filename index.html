@@ -310,6 +310,62 @@
             50% { background-position: 100% 50%; }
         }
 
+        /* Timer Display */
+        .timer-display {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .timer-display.warning {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: timerPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Stats Card */
+        .stats-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Opened Question Marker */
+        .question-opened {
+            border: 2px solid var(--color-green) !important;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .question-opened::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--color-green);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
         @media print {
             .no-print { display: none !important; }
         }
@@ -353,18 +409,100 @@
                 Pretest Pengkodean
             </h1>
             <p class="mt-6 text-m md:text-l text-[--color-text-secondary] max-w-3xl mx-auto leading-relaxed">
-                “Yuk main tebak-tebakan encoder dan decoder!
+                "Yuk main tebak-tebakan encoder dan decoder!
                 Kalau kamu bingung, itu wajar… soalnya otak manusia memang bukan IC 74LS138.
-                Tapi coba aja dulu, siapa tahu hari ini sinyal logika di kepalamu lagi HIGH semua.”
+                Tapi coba aja dulu, siapa tahu hari ini sinyal logika di kepalamu lagi HIGH semua."
             </p>
+        </section>
+
+        <!-- Timer & Stats Section -->
+        <section class="mb-12 grid md:grid-cols-2 gap-6">
+            <!-- Timer Card -->
+            <div class="card-surface p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+                        <i data-lucide="clock" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-black text-[--color-text-primary]">Timer</h3>
+                        <p class="text-sm text-[--color-text-secondary]">Atur waktu pengerjaan</p>
+                    </div>
+                </div>
+
+                <div class="text-center mb-6">
+                    <div id="timerDisplay" class="timer-display">15:00</div>
+                </div>
+
+                <div class="flex gap-3 mb-6 flex-wrap justify-center">
+                    <button class="timer-preset btn-action bg-gray-600 hover:bg-gray-700 text-white text-sm" data-minutes="3">3 min</button>
+                    <button class="timer-preset btn-action bg-gray-600 hover:bg-gray-700 text-white text-sm" data-minutes="5">5 min</button>
+                    <button class="timer-preset btn-action bg-gray-600 hover:bg-gray-700 text-white text-sm" data-minutes="10">10 min</button>
+                    <button class="timer-preset btn-action bg-blue-600 hover:bg-blue-700 text-white text-sm" data-minutes="15">15 min</button>
+                </div>
+
+                <div class="flex gap-3 justify-center">
+                    <button id="timerPlayPause" class="btn-action btn-action-primary">
+                        <i id="timerIcon" data-lucide="play" class="w-5 h-5"></i>
+                        <span id="timerButtonText" class="ml-2">Mulai</span>
+                    </button>
+                    <button id="timerReset" class="btn-action bg-gray-600 hover:bg-gray-700 text-white">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                        <span class="ml-2">Reset</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics Card -->
+            <div class="card-surface p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
+                        <i data-lucide="bar-chart-3" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-black text-[--color-text-primary]">Statistik</h3>
+                        <p class="text-sm text-[--color-text-secondary]">Progress pengerjaan</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="stats-card">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[--color-text-secondary] font-semibold">Soal Dibuka</span>
+                            <span class="text-3xl font-black text-[--color-text-primary]">
+                                <span id="statsOpened">0</span>/<span id="statsTotal">15</span>
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                            <div id="statsProgress" class="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="stats-card text-center">
+                            <i data-lucide="eye" class="w-5 h-5 mx-auto mb-2 text-blue-500"></i>
+                            <div class="text-2xl font-black text-[--color-text-primary]" id="statsViewCount">0</div>
+                            <div class="text-xs text-[--color-text-secondary]">Total Dilihat</div>
+                        </div>
+                        <div class="stats-card text-center">
+                            <i data-lucide="percent" class="w-5 h-5 mx-auto mb-2 text-purple-500"></i>
+                            <div class="text-2xl font-black text-[--color-text-primary]" id="statsPercentage">0%</div>
+                            <div class="text-xs text-[--color-text-secondary]">Persentase</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" aria-label="Daftar Soal"></section>
 
-        <div class="mt-24 flex justify-center">
+        <div class="mt-24 flex justify-center gap-4">
             <button id="resetBtn" class="btn-action bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700 text-white shadow-2xl shadow-red-500/40 focus-ring">
                 <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                 <span class="ml-2">Reset Semua Soal</span>
+            </button>
+            <button id="resetStatsBtn" class="btn-action bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white shadow-2xl shadow-purple-500/40 focus-ring">
+                <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                <span class="ml-2">Reset Statistik</span>
             </button>
         </div>
     </main>
@@ -458,9 +596,196 @@
             "Bisakah rangkaian encoder dan decoder diintegrasikan dalam satu sistem? Jika memungkinkan, jelaskan bagaimana cara penggabungannya. Jika tidak memungkinkan, jelaskan alasannya!"
         ];
 
-
         let QUESTIONS = [];
+        let openedQuestions = new Set();
+        let viewCount = 0;
         const grid = document.getElementById('grid');
+        
+        // Timer Variables
+        let timerInterval = null;
+        let timerSeconds = 15 * 60;
+        let timerRunning = false;
+        let selectedMinutes = 15;
+
+        // Audio Context for Timer Sound
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTimerSound() {
+            // Create a pleasant alarm sound
+            const now = audioContext.currentTime;
+            const oscillator1 = audioContext.createOscillator();
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator1.connect(gainNode);
+            oscillator2.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator1.frequency.value = 800;
+            oscillator2.frequency.value = 1000;
+            oscillator1.type = 'sine';
+            oscillator2.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            
+            oscillator1.start(now);
+            oscillator2.start(now);
+            oscillator1.stop(now + 0.5);
+            oscillator2.stop(now + 0.5);
+            
+            // Play 3 beeps
+            setTimeout(() => playBeep(), 600);
+            setTimeout(() => playBeep(), 1200);
+        }
+
+        function playBeep() {
+            const now = audioContext.currentTime;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            osc.frequency.value = 900;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerDisplay() {
+            const display = document.getElementById('timerDisplay');
+            display.textContent = formatTime(timerSeconds);
+            
+            if (timerSeconds < 60) {
+                display.classList.add('warning');
+            } else {
+                display.classList.remove('warning');
+            }
+        }
+
+        function startTimer() {
+            if (timerRunning) return;
+            timerRunning = true;
+            
+            const playPauseBtn = document.getElementById('timerPlayPause');
+            const icon = document.getElementById('timerIcon');
+            const text = document.getElementById('timerButtonText');
+            
+            icon.setAttribute('data-lucide', 'pause');
+            text.textContent = 'Pause';
+            lucide.createIcons();
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                
+                if (timerSeconds <= 0) {
+                    stopTimer();
+                    playTimerSound();
+                    alert('⏰ Waktu Habis! Timer telah selesai.');
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            timerRunning = false;
+            clearInterval(timerInterval);
+            
+            const playPauseBtn = document.getElementById('timerPlayPause');
+            const icon = document.getElementById('timerIcon');
+            const text = document.getElementById('timerButtonText');
+            
+            icon.setAttribute('data-lucide', 'play');
+            text.textContent = 'Mulai';
+            lucide.createIcons();
+        }
+
+        function resetTimer() {
+            stopTimer();
+            timerSeconds = selectedMinutes * 60;
+            updateTimerDisplay();
+        }
+
+        // Timer Event Listeners
+        document.getElementById('timerPlayPause').addEventListener('click', () => {
+            if (timerRunning) {
+                stopTimer();
+            } else {
+                startTimer();
+            }
+        });
+
+        document.getElementById('timerReset').addEventListener('click', resetTimer);
+
+        document.querySelectorAll('.timer-preset').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                selectedMinutes = parseInt(e.currentTarget.dataset.minutes);
+                stopTimer();
+                timerSeconds = selectedMinutes * 60;
+                updateTimerDisplay();
+                
+                // Update active button style
+                document.querySelectorAll('.timer-preset').forEach(b => {
+                    b.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    b.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                });
+                e.currentTarget.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+                e.currentTarget.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            });
+        });
+
+        // Statistics Functions
+        function updateStats() {
+            const total = QUESTIONS.length;
+            const opened = openedQuestions.size;
+            const percentage = total > 0 ? Math.round((opened / total) * 100) : 0;
+            
+            document.getElementById('statsOpened').textContent = opened;
+            document.getElementById('statsTotal').textContent = total;
+            document.getElementById('statsViewCount').textContent = viewCount;
+            document.getElementById('statsPercentage').textContent = percentage + '%';
+            document.getElementById('statsProgress').style.width = percentage + '%';
+            
+            // Save to localStorage
+            localStorage.setItem('pretest_opened', JSON.stringify([...openedQuestions]));
+            localStorage.setItem('pretest_viewcount', viewCount);
+        }
+
+        function loadStats() {
+            const saved = localStorage.getItem('pretest_opened');
+            const savedCount = localStorage.getItem('pretest_viewcount');
+            
+            if (saved) {
+                openedQuestions = new Set(JSON.parse(saved));
+            }
+            if (savedCount) {
+                viewCount = parseInt(savedCount);
+            }
+            
+            updateStats();
+        }
+
+        function resetStats() {
+            if (!confirm('Reset semua statistik pengerjaan?')) return;
+            openedQuestions.clear();
+            viewCount = 0;
+            localStorage.removeItem('pretest_opened');
+            localStorage.removeItem('pretest_viewcount');
+            updateStats();
+            renderCards();
+        }
+
+        document.getElementById('resetStatsBtn').addEventListener('click', resetStats);
         
         function el(tag, cls = '', html = '') {
             const e = document.createElement(tag);
@@ -474,7 +799,9 @@
 
             QUESTIONS.forEach((q, idx) => {
                 const n = idx + 1;
-                const card = el('div', 'relative card-surface p-6 h-40 flex flex-col justify-between cursor-pointer focus-ring');
+                const isOpened = openedQuestions.has(n);
+                
+                const card = el('div', `relative card-surface p-6 h-40 flex flex-col justify-between cursor-pointer focus-ring ${isOpened ? 'question-opened' : ''}`);
                 card.style.animation = `cardEnter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both`;
                 card.style.animationDelay = `${idx * 40}ms`;
 
@@ -502,7 +829,6 @@
                     }
                 });
 
-                // Mouse tracking for hover effect
                 card.addEventListener('mousemove', (e) => {
                     const rect = card.getBoundingClientRect();
                     const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -530,6 +856,15 @@
 
         function openModal(n) {
             activeIndex = n - 1;
+            
+            // Track statistics
+            if (!openedQuestions.has(n)) {
+                openedQuestions.add(n);
+            }
+            viewCount++;
+            updateStats();
+            renderCards();
+            
             renderModal();
             overlay.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -557,11 +892,25 @@
             if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 activeIndex = (activeIndex - 1 + QUESTIONS.length) % QUESTIONS.length;
+                const n = activeIndex + 1;
+                if (!openedQuestions.has(n)) {
+                    openedQuestions.add(n);
+                }
+                viewCount++;
+                updateStats();
+                renderCards();
                 renderModal();
             }
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
                 activeIndex = (activeIndex + 1) % QUESTIONS.length;
+                const n = activeIndex + 1;
+                if (!openedQuestions.has(n)) {
+                    openedQuestions.add(n);
+                }
+                viewCount++;
+                updateStats();
+                renderCards();
                 renderModal();
             }
         }
@@ -579,12 +928,26 @@
         prevBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             activeIndex = (activeIndex - 1 + QUESTIONS.length) % QUESTIONS.length;
+            const n = activeIndex + 1;
+            if (!openedQuestions.has(n)) {
+                openedQuestions.add(n);
+            }
+            viewCount++;
+            updateStats();
+            renderCards();
             renderModal();
         });
         
         nextBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             activeIndex = (activeIndex + 1) % QUESTIONS.length;
+            const n = activeIndex + 1;
+            if (!openedQuestions.has(n)) {
+                openedQuestions.add(n);
+            }
+            viewCount++;
+            updateStats();
+            renderCards();
             renderModal();
         });
         
@@ -700,6 +1063,8 @@
             const saved = localStorage.getItem('pretest_questions');
             QUESTIONS = saved ? JSON.parse(saved) : DEFAULT_QUESTIONS.slice();
             renderCards();
+            loadStats();
+            updateTimerDisplay();
         }
         
         init();
